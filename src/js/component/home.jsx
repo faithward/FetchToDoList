@@ -42,7 +42,22 @@ const Home = () => {
       .catch((error) => console.log("error", error));
   };
 
+  const deleteTask = (index) => {
+    const editList = list.filter((task, i) => i != index);
+    console.log(editList);
+    fetch("https://assets.breatheco.de/apis/fake/todos/user/faithward", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editList),
+      redirect: "follow",
+    })
+      .then((response) => response.json())
+      .then((result) => getList())
+      .catch((error) => console.log("error", error));
+  }
+
   const [newTask, setNewTask] = useState("");
+
   const handleSubmit = (event) => {
     event.preventDefault();
     addTask(newTask);
@@ -53,6 +68,10 @@ const Home = () => {
     event.preventDefault();
     clearList();
     setNewTask("");
+  }
+
+  const handleDelete = (index) => {
+    deleteTask(index)
   }
 
   return (
@@ -72,8 +91,11 @@ const Home = () => {
       </form>
       <br></br>
       {list.map((task, i) => {
-        return <p key={i}>{task.label}</p>;
-      })}
+        return (
+          <>{
+            i == 0 ? "" : <p key={i}>{task.label} <button className="btn btn-danger" onClick={() => handleDelete(i)}>X</button></p>
+          }</>
+)})}
       <button onClick={handleClear}>Clear list</button>
     </div>
   );
